@@ -27,3 +27,6 @@
 ## Next steps
 - Phase 2: wrap model in an API (FastAPI)
 - Phase 3: deploy API, connect to frontend (Lovable)
+
+- **Deployed API :**
+- https://smartcrop-api-1p5w.onrender.com
