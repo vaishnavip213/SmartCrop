@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather-Based Crop Planning Assistant</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-content">
+                <h1 class="logo">🌾 SmartCrop</h1>
+                <ul class="nav-links">
+                    <li><a href="#input-section" class="nav-link">Plan</a></li>
+                    <li><a href="#results-section" class="nav-link">Results</a></li>
+                    <li><a href="#assistant-section" class="nav-link">AI Assistant</a></li>
+                    <li><a href="#info-section" class="nav-link">Info</a></li>
+                </ul>
+                <!-- AI Quick Chat in Navbar -->
+                <div class="navbar-ai-chat">
+                    <button id="navAiBtn" class="nav-ai-btn" title="Open AI Assistant">
+                        🤖
+                    </button>
+                    <div id="navAiModal" class="nav-ai-modal hidden">
+                        <div class="nav-ai-header">
+                            <h4>Quick AI Help</h4>
+                            <button id="closeNavAi" class="close-btn">&times;</button>
+                        </div>
+                        <div id="navAiChat" class="nav-ai-chat-box">
+                            <div class="chat-message assistant-message">
+                                <p>Hi! Ask me anything quickly. 👋</p>
+                            </div>
+                        </div>
+                        <div class="nav-ai-input-group">
+                            <input 
+                                type="text" 
+                                id="navAiInput" 
+                                placeholder="Ask something..."
+                                class="nav-ai-input"
+                            >
+                            <button id="navAiSend" class="nav-ai-send">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h2>Smart Crop Planning for Every Season</h2>
+                <p>Get weather-based crop recommendations tailored to your farm</p>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Section 1: User Input & Interface -->
+            <section id="input-section" class="section">
+                <div class="section-header">
+                    <h2>📍 Step 1: Provide Farm Details</h2>
+                    <p>Enter your location, soil type, and season information</p>
+                </div>
+
+                <form id="farmForm" class="form-container">
+                    <div class="form-grid">
+                        <!-- Location Input -->
+                        <div class="form-group">
+                            <label for="location">City / District Name *</label>
+                            <input 
+                                type="text" 
+                                id="location" 
+                                name="location" 
+                                placeholder="e.g., Bangalore, Mumbai, Delhi"
+                                required
+                            >
+                            <small>Enter your city or district name</small>
+                        </div>
+
+                        <!-- Soil Type Selection -->
+                        <div class="form-group">
+                            <label for="soilType">Soil Type *</label>
+                            <select id="soilType" name="soilType" required>
+                                <option value="">Select Soil Type</option>
+                                <option value="black">Black Soil</option>
+                                <option value="red">Red Soil</option>
+                                <option value="loamy">Loamy Soil</option>
+                                <option value="sandy">Sandy Soil</option>
+                            </select>
+                        </div>
+
+                        <!-- Season Selection -->
+                        <div class="form-group">
+                            <label for="season">Season *</label>
+                            <select id="season" name="season" required>
+                                <option value="">Select Season</option>
+                                <option value="kharif">Kharif (Monsoon)</option>
+                                <option value="rabi">Rabi (Winter)</option>
+                                <option value="zaid">Zaid (Summer)</option>
+                            </select>
+                        </div>
+
+                        <!-- Farm Area (Optional) -->
+                        <div class="form-group">
+                            <label for="farmArea">Farm Area (Acres)</label>
+                            <input 
+                                type="number" 
+                                id="farmArea" 
+                                name="farmArea" 
+                                placeholder="e.g., 5"
+                                step="0.1"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        Get Recommendations
+                    </button>
+                </form>
+
+                <!-- Loading Spinner -->
+                <div id="loadingSpinner" class="loading-spinner hidden">
+                    <div class="spinner"></div>
+                    <p>Analyzing weather and soil data...</p>
+                </div>
+            </section>
+
+            <!-- Section 2: Weather Data Display -->
+            <section id="weather-section" class="section hidden">
+                <div class="section-header">
+                    <h2>🌦️ Current Weather Data</h2>
+                    <p>Real-time weather information for your location</p>
+                </div>
+
+                <div class="weather-grid">
+                    <div class="weather-card">
+                        <div class="weather-icon">🌡️</div>
+                        <div class="weather-info">
+                            <p class="weather-label">Temperature</p>
+                            <p class="weather-value"><span id="temperature">--</span>°C</p>
+                        </div>
+                    </div>
+
+                    <div class="weather-card">
+                        <div class="weather-icon">💧</div>
+                        <div class="weather-info">
+                            <p class="weather-label">Humidity</p>
+                            <p class="weather-value"><span id="humidity">--</span>%</p>
+                        </div>
+                    </div>
+
+                    <div class="weather-card">
+                        <div class="weather-icon">🌧️</div>
+                        <div class="weather-info">
+                            <p class="weather-label">Rainfall Prediction</p>
+                            <p class="weather-value"><span id="rainfall">--</span>mm</p>
+                        </div>
+                    </div>
+
+                    <div class="weather-card">
+                        <div class="weather-icon">💨</div>
+                        <div class="weather-info">
+                            <p class="weather-label">Wind Speed</p>
+                            <p class="weather-value"><span id="windSpeed">--</span>km/h</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7-Day Forecast -->
+                <div class="forecast-container">
+                    <h3>7-Day Weather Forecast</h3>
+                    <div id="forecastList" class="forecast-list">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3 & 4: Results Dashboard -->
+            <section id="results-section" class="section hidden">
+                <div class="section-header">
+                    <h2>📊 Crop Recommendations & Analysis</h2>
+                    <p>AI-powered crop suggestions based on your farm conditions</p>
+                </div>
+
+                <!-- Top Recommended Crop -->
+                <div class="recommended-crop-card">
+                    <div class="crop-badge">🏆 Best Match</div>
+                    <h3 id="topCropName">--</h3>
+                    <div class="crop-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Confidence Score:</span>
+                            <span id="topCropScore" class="detail-value">--</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Expected Yield:</span>
+                            <span id="topCropYield" class="detail-value">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- All Recommendations -->
+                <div class="recommendations-container">
+                    <h3>All Crop Recommendations</h3>
+                    <div id="cropRecommendations" class="crops-grid">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Risk Alerts -->
+                <div class="risk-section">
+                    <h3>⚠️ Weather Risk Alerts</h3>
+                    <div id="riskAlerts" class="alerts-container">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Compatibility Details -->
+                <div class="compatibility-section">
+                    <h3>📋 Soil & Weather Compatibility</h3>
+                    <div class="compatibility-grid">
+                        <div class="compatibility-card">
+                            <h4>Soil Type Match</h4>
+                            <p id="soilMatch">--</p>
+                        </div>
+                        <div class="compatibility-card">
+                            <h4>Temperature Range</h4>
+                            <p id="tempRange">--</p>
+                        </div>
+                        <div class="compatibility-card">
+                            <h4>Rainfall Requirements</h4>
+                            <p id="rainfallRange">--</p>
+                        </div>
+                        <div class="compatibility-card">
+                            <h4>Crop Duration</h4>
+                            <p id="cropDuration">--</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 5: Crop Scheduling -->
+            <section id="schedule-section" class="section hidden">
+                <div class="section-header">
+                    <h2>📅 Farming Calendar & Schedule</h2>
+                    <p>Recommended dates for planting, fertilization, and harvesting</p>
+                </div>
+
+                <div class="schedule-table-container">
+                    <table class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>Activity</th>
+                                <th>Recommended Date</th>
+                                <th>Duration</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scheduleBody">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Activity Timeline -->
+                <div class="timeline-container">
+                    <h3>Activity Timeline</h3>
+                    <div id="timeline" class="timeline">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 9: AI Assistant (Bonus) -->
+            <section id="assistant-section" class="section">
+                <div class="section-header">
+                    <h2>🤖 AI Assistant</h2>
+                    <p>Ask questions about your farming plan</p>
+                </div>
+
+                <div class="assistant-container">
+                    <div id="chatBox" class="chat-box">
+                        <div class="chat-message assistant-message">
+                            <p>Hello! 👋 I'm your farming assistant. Ask me anything about crop recommendations, weather risks, or farming schedules.</p>
+                        </div>
+                    </div>
+
+                    <div class="assistant-input">
+                        <input 
+                            type="text" 
+                            id="assistantInput" 
+                            placeholder="Ask me something... e.g., Why this crop?"
+                            disabled
+                        >
+                        <button id="sendBtn" class="btn btn-small" disabled>Send</button>
+                    </div>
+
+                    <div class="quick-questions">
+                        <p>Quick Questions:</p>
+                        <button class="quick-btn" data-question="why-crop">Why this crop?</button>
+                        <button class="quick-btn" data-question="weather-risk">What's the weather risk?</button>
+                        <button class="quick-btn" data-question="next-step">What should I do now?</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Information Section -->
+            <section id="info-section" class="section info-section">
+                <div class="section-header">
+                    <h2>ℹ️ About This Tool</h2>
+                    <p>Understanding our recommendations</p>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3>🌱 How We Recommend Crops</h3>
+                        <p>Our system analyzes your soil type, weather conditions, and season to recommend the best crops. Each recommendation is scored based on compatibility with your farm conditions.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>⚠️ Risk Alerts Explained</h3>
+                        <p>We monitor temperature, rainfall, and humidity to identify potential risks like drought, floods, or heat stress. Early warnings help you take preventive measures.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>📅 Scheduling Guide</h3>
+                        <p>Our calendar provides specific dates for key farming activities based on the selected crop and season. Follow these dates for optimal crop performance.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>🔬 Soil Type Guide</h3>
+                        <p><strong>Black:</strong> High fertility, good water retention. <strong>Red:</strong> Medium fertility, good drainage. <strong>Loamy:</strong> Best for most crops. <strong>Sandy:</strong> Low water retention, high drainage.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 Weather-Based Crop Planning Assistant | Made for Farmers 🌾</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
