@@ -28,5 +28,8 @@
 - Phase 2: wrap model in an API (FastAPI)
 - Phase 3: deploy API, connect to frontend (Lovable)
 
+ ## Future Improvements:
+  Benchmark Random Forest against XGBoost/LightGBM with cross-validation and SHAP explainability — architecture already supports swapping models with minimal changes.
+
 - **Deployed API :**
 - https://smartcrop-api-1p5w.onrender.com
